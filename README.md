@@ -1,0 +1,2 @@
+# yosho
+Discord bot
