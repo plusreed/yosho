@@ -1,12 +1,13 @@
 import telegram
+import random
 from telegram import InlineQueryResultArticle, InputTextMessageContent
 from telegram.ext import Updater, CommandHandler, InlineQueryHandler
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut, ChatMigrated, NetworkError
 import logging
 
 ### initialize bot and logging for debugging ###
-bot = telegram.Bot(token=" TOKEN HERE ")
-updater = Updater(token=" TOKEN HERE ")
+bot = telegram.Bot(token="")
+updater = Updater(token="")
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -31,30 +32,80 @@ def helpme(bot, update):
 help_handler = CommandHandler("help", helpme)
 updater.dispatcher.add_handler(help_handler)
 
+debuggingon = False
+
+def toggledebug(bot, update):
+    global debuggingon
+    if debuggingon:
+        bot.sendMessage(chat_id=update.message.chat_id, text="Debug off")
+        debuggingon = False
+        return
+    if not debuggingon:
+        bot.sendMessage(chat_id=update.message.chat_id, text="Debug on")
+        debuggingon = True
+        return
+
+debug_handler = CommandHandler("debug", toggledebug)
+updater.dispatcher.add_handler(debug_handler)
 
 # ping command to make sure that the bot is alive
 def pingpong(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text="Sensei")
+    bot.sendMessage(chat_id=update.message.chat_id, text="Ointments.")
 
 
-ping_handler = CommandHandler("tamanegi", pingpong)
+ping_handler = CommandHandler("ointments", pingpong)
 updater.dispatcher.add_handler(ping_handler)
 
 
-# adds two numbers
+# adds numbers
 def addcommand(bot, update, args):
-    output = float(args[0]) + float(args[1])
-    bot.sendMessage(chat_id=update.message.chat_id, text=output)
+    if(args == []):
+        bot.sendMessage(chat_id=update.message.chat_id, text="Incorrect usage.\n\nUsage: `/add x y z ...`", parse_mode=telegram.ParseMode.MARKDOWN)
+    else:
+        bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+        output = 0
+        tick = -1
+        for i in args:
+            tick = int(tick)
+            tick = tick + 1
+            tick = str(tick)
+            if debuggingon:
+                bot.sendMessage(chat_id=update.message.chat_id, text="value of args[" + tick + "]: " + i)
+            i = int(i)
+            output = output + i
+        output = str(output)
+        if debuggingon:
+            bot.sendMessage(chat_id=update.message.chat_id, text="result: " + output)
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text=output)
 
 
 addition_handler = CommandHandler("add", addcommand, pass_args=True)
 updater.dispatcher.add_handler(addition_handler)
 
 
-# subtracts two numbers
+# subtracts numbers
 def subtract(bot, update, args):
-    output = float(args[0]) - float(args[1])
-    bot.sendMessage(chat_id=update.message.chat_id, text=output)
+    if(args == []):
+        bot.sendMessage(chat_id=update.message.chat_id, text="Incorrect usage.\n\nUsage: `/subtract x y z ...`\n(it subtracts left to right be careful of order)", parse_mode=telegram.ParseMode.MARKDOWN)
+    else:
+        bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+        output = int(args[0])
+        tick = -1
+        for i in args:
+            tick = int(tick)
+            tick = tick + 1
+            tick = str(tick)
+            if debuggingon:
+                bot.sendMessage(chat_id=update.message.chat_id, text="value of args[" + tick + "]: " + i)
+            i = int(i)
+            if tick != "0": #don't subtract the very first tick, cause then you'd subtract args[0] from args[0], bad
+                output = output - i
+        output = str(output)
+        if debuggingon:
+            bot.sendMessage(chat_id=update.message.chat_id, text="result: " + output)
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text=output)
 
 
 subtraction_handler = CommandHandler("subtract", subtract, pass_args=True)
@@ -63,8 +114,26 @@ updater.dispatcher.add_handler(subtraction_handler)
 
 # multiply two numbers
 def multipl(bot, update, args):
-    output = float(args[0]) * float(args[1])
-    bot.sendMessage(chat_id=update.message.chat_id, text=output)
+    if(args == []):
+        bot.sendMessage(chat_id=update.message.chat_id, text="Incorrect usage.\n\nUsage: `/multiply x y z ...`", parse_mode=telegram.ParseMode.MARKDOWN)
+
+    else:
+        bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+        tick = -1
+        output = 1
+        for i in args:
+            tick = int(tick)
+            tick = tick + 1
+            tick = str(tick)
+            if debuggingon:
+                bot.sendMessage(chat_id=update.message.chat_id, text="value of args[" + tick + "]: " + i)
+            i = int(i)
+            output = output * i
+        output = str(output)
+        if debuggingon:
+            bot.sendMessage(chat_id=update.message.chat_id, text="result: " + output)
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text=output)
 
 
 multiplication_handler = CommandHandler("multiply", multipl, pass_args=True)
@@ -73,12 +142,43 @@ updater.dispatcher.add_handler(multiplication_handler)
 
 # divide two numbers
 def divid(bot, update, args):
-    output = float(args[0]) / float(args[1])
-    bot.sendMessage(chat_id=update.message.chat_id, text=output)
+    if(args == []):
+        bot.sendMessage(chat_id=update.message.chat_id, text="Incorrect usage.\n\nUsage: `/divide x y z ...`\n(it divides left to right be careful of order)", parse_mode=telegram.ParseMode.MARKDOWN)
+    else:
+        bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+        output = int(args[0])
+        tick = -1
+        for i in args:
+            tick = int(tick)
+            tick = tick + 1
+            tick = str(tick)
+            if debuggingon:
+                bot.sendMessage(chat_id=update.message.chat_id, text="value of args[" + tick + "]: " + i)
+            i = int(i)
+            if tick != "0": #don't subtract the very first tick, cause then you'd subtract args[0] from args[0], bad
+                output = output / i
+        output = str(output)
+        if debuggingon:
+            bot.sendMessage(chat_id=update.message.chat_id, text="result: " + output)
+        else:
+            bot.sendMessage(chat_id=update.message.chat_id, text=output)
 
 
 division_handler = CommandHandler("divide", divid, pass_args=True)
 updater.dispatcher.add_handler(division_handler)
+
+def diceroll(bot, update, args):
+    if(args == []):
+        bot.sendMessage(chat_id=update.message.chat_id, text="Incorrect usage.\n\nUsage: `/roll <range>`", parse_mode=telegram.ParseMode.MARKDOWN)
+        return
+    else:
+        bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+        num = int(args[0])
+        output = str(random.randint(1,num))
+        bot.sendMessage(chat_id=update.message.chat_id, text=output)
+
+dice_handler = CommandHandler("roll", diceroll, pass_args=True)
+updater.dispatcher.add_handler(dice_handler)
 
 # inline commands
 def inlinestuff(bot, update):
@@ -97,6 +197,13 @@ def inlinestuff(bot, update):
 
 inline_shrug_handler = InlineQueryHandler(inlinestuff)
 updater.dispatcher.add_handler(inline_shrug_handler)
+
+
+def getchatid(bot, update):
+    bot.sendMessage(chat_id=update.message.chat_id, text=update.message.chat_id)
+
+getchathandler = CommandHandler("chatid", getchatid)
+updater.dispatcher.add_handler(getchathandler)
 
 updater.dispatcher.add_error_handler(error)
 
