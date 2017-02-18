@@ -6,8 +6,8 @@ from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut, Ch
 import logging
 
 ### initialize bot and logging for debugging ###
-bot = telegram.Bot(token="")
-updater = Updater(token="")
+bot = telegram.Bot(token="token")
+updater = Updater(token="token")
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
 logger = logging.getLogger(__name__)
 
@@ -37,15 +37,15 @@ debuggingon = False
 def toggledebug(bot, update):
     global debuggingon
     if debuggingon:
-        bot.sendMessage(chat_id=update.message.chat_id, text="Debug off")
+        bot.sendMessage(chat_id=update.message.chat_id, text="No")
         debuggingon = False
         return
     if not debuggingon:
-        bot.sendMessage(chat_id=update.message.chat_id, text="Debug on")
+        bot.sendMessage(chat_id=update.message.chat_id, text="Yes")
         debuggingon = True
         return
 
-debug_handler = CommandHandler("debug", toggledebug)
+debug_handler = CommandHandler("amicute", toggledebug)
 updater.dispatcher.add_handler(debug_handler)
 
 # ping command to make sure that the bot is alive
@@ -204,6 +204,28 @@ def getchatid(bot, update):
 
 getchathandler = CommandHandler("chatid", getchatid)
 updater.dispatcher.add_handler(getchathandler)
+
+def echo(bot, update):
+    bot.sendChatAction(chat_id=update.message.chat_id, action=telegram.ChatAction.TYPING)
+    reply = update.message.text[6:]
+    if reply == "":
+        bot.sendMessage(chat_id=update.message.chat_id, text="Gimmie some text to echo!")
+        return
+    if reply == "Gimmie some text to echo!":
+        bot.sendMessage(chat_id=update.message.chat_id, text="That's my line.")
+        return
+    if reply != "":
+        bot.sendMessage(chat_id=update.message.chat_id, text=reply)
+        return
+
+echo_handler = CommandHandler("echo", echo)
+updater.dispatcher.add_handler(echo_handler)
+
+def effective(bot, update):
+    bot.sendMessage(chat_id=update.message.chat_id, text='effective. Power لُلُصّ؜بُلُلصّبُرر ॣh؜ً؜ ॣ؜؜ ॣ؜ ॣ؜')
+
+effective_handler = CommandHandler("effective.", effective)
+updater.dispatcher.add_handler(effective_handler)
 
 updater.dispatcher.add_error_handler(error)
 
