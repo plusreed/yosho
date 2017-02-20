@@ -5,7 +5,7 @@ from telegram.ext import Updater, CommandHandler, InlineQueryHandler
 from telegram.error import TelegramError, Unauthorized, BadRequest, TimedOut, ChatMigrated, NetworkError
 import logging
 
-### initialize bot and logging for debugging ###
+# initialize bot and logging for debugging #
 bot = telegram.Bot(token="token")
 updater = Updater(token="token")
 logging.basicConfig(format='%(asctime)s - %(name)s - %(levelname)s - %(message)s', level=logging.INFO)
@@ -26,7 +26,7 @@ updater.dispatcher.add_handler(start_handler)
 # help command
 def helpme(bot, update):
     bot.sendMessage(chat_id=update.message.chat_id,
-                    text="Available commands:\n/add x y - adds two numbers\n/subtract x y - subtracts two numbers (x - y)\n/multiply x y - multiplies two numbers\n/divide x y - divides two numbers (x / y)\n\nInline subcommands:\nshrug - sends an ascii shrug.")
+                    text="Available commands:\n/echo text - echoes text\n/roll x - rolls a number between 1 and x\n/add x y - adds two numbers\n/subtract x y - subtracts two numbers (x - y)\n/multiply x y - multiplies two numbers\n/divide x y - divides two numbers (x / y)\n\nInline subcommands:\nshrug - sends an ascii shrug.\nbadtime - fucken love undertale")
 
 
 help_handler = CommandHandler("help", helpme)
@@ -191,6 +191,8 @@ def inlinestuff(bot, update):
         results.append(InlineQueryResultArticle(id="shrug", title="¯\_(ツ)_/¯", input_message_content=InputTextMessageContent("¯\_(ツ)_/¯")))
     if(query == "ping"):
         results.append(InlineQueryResultArticle(id="ping", title="ping", input_message_content=InputTextMessageContent("pong")))
+    if (query == "badtime"):
+        results.append(InlineQueryResultArticle(id="badtime", title="fucken love undertale", input_message_content=InputTextMessageContent("…………/´¯/)…………….(\¯`.…………..\n………../…//……….i…….\….…………..\n………./…//…fuken luv….\….………….\n…../´¯/…./´¯..undertale./¯` .…\¯`.…….\n.././…/…./…./.|_.have._|..….……..…..\n(.(b.(..a.(..d./..)..)……(..(." + "\\" + "ti.)..m.)..e.).)….\n..……………\/…/………\/……………./….\n……………….. /……….……………..")))
     update.inline_query.answer(results)
     #bot.answerInlineQuery("shrug", results)
 
@@ -222,10 +224,16 @@ echo_handler = CommandHandler("echo", echo)
 updater.dispatcher.add_handler(echo_handler)
 
 def effective(bot, update):
-    bot.sendMessage(chat_id=update.message.chat_id, text='effective. Power لُلُصّ؜بُلُلصّبُرر ॣh؜ً؜ ॣ؜؜ ॣ؜ ॣ؜')
+    bot.sendMessage(chat_id=update.message.chat_id, text='Power لُلُصّ؜بُلُلصّبُررًً ॣ h؜ ॣ؜ ॣ ॣ')
 
 effective_handler = CommandHandler("effective.", effective)
 updater.dispatcher.add_handler(effective_handler)
+
+def badtime(bot, update):
+    bot.sendMessage(chat_id=update.message.chat_id, text="…………/´¯/)…………….(\¯`.…………..\n………../…//……….i…….\….…………..\n………./…//…fuken luv….\….………….\n…../´¯/…./´¯..undertale./¯` .…\¯`.…….\n.././…/…./…./.|_.have._|..….……..…..\n(.(b.(..a.(..d./..)..)……(..(." + "\\" + "ti.)..m.)..e.).)….\n..……………\/…/………\/……………./….\n……………….. /……….……………..")
+
+badtime_handler = CommandHandler("badtime", badtime)
+updater.dispatcher.add_handler(badtime_handler)
 
 updater.dispatcher.add_error_handler(error)
 
